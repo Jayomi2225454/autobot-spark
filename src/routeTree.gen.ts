@@ -10,33 +10,78 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicWebhooksMetaRouteImport } from './routes/api/public/webhooks/meta'
+import { Route as ApiPublicWebhooksLeadIntakeRouteImport } from './routes/api/public/webhooks/lead-intake'
+import { Route as ApiPublicCronWhatsappRetryRouteImport } from './routes/api/public/cron/whatsapp-retry'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhooksMetaRoute = ApiPublicWebhooksMetaRouteImport.update({
+  id: '/api/public/webhooks/meta',
+  path: '/api/public/webhooks/meta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWebhooksLeadIntakeRoute =
+  ApiPublicWebhooksLeadIntakeRouteImport.update({
+    id: '/api/public/webhooks/lead-intake',
+    path: '/api/public/webhooks/lead-intake',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCronWhatsappRetryRoute =
+  ApiPublicCronWhatsappRetryRouteImport.update({
+    id: '/api/public/cron/whatsapp-retry',
+    path: '/api/public/cron/whatsapp-retry',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
+  '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
+  '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
+  '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
+  '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
+  '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
+  '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/api/public/cron/whatsapp-retry'
+    | '/api/public/webhooks/lead-intake'
+    | '/api/public/webhooks/meta'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/api/public/cron/whatsapp-retry'
+    | '/api/public/webhooks/lead-intake'
+    | '/api/public/webhooks/meta'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/public/cron/whatsapp-retry'
+    | '/api/public/webhooks/lead-intake'
+    | '/api/public/webhooks/meta'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicCronWhatsappRetryRoute: typeof ApiPublicCronWhatsappRetryRoute
+  ApiPublicWebhooksLeadIntakeRoute: typeof ApiPublicWebhooksLeadIntakeRoute
+  ApiPublicWebhooksMetaRoute: typeof ApiPublicWebhooksMetaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +93,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/meta': {
+      id: '/api/public/webhooks/meta'
+      path: '/api/public/webhooks/meta'
+      fullPath: '/api/public/webhooks/meta'
+      preLoaderRoute: typeof ApiPublicWebhooksMetaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/lead-intake': {
+      id: '/api/public/webhooks/lead-intake'
+      path: '/api/public/webhooks/lead-intake'
+      fullPath: '/api/public/webhooks/lead-intake'
+      preLoaderRoute: typeof ApiPublicWebhooksLeadIntakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/whatsapp-retry': {
+      id: '/api/public/cron/whatsapp-retry'
+      path: '/api/public/cron/whatsapp-retry'
+      fullPath: '/api/public/cron/whatsapp-retry'
+      preLoaderRoute: typeof ApiPublicCronWhatsappRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicCronWhatsappRetryRoute: ApiPublicCronWhatsappRetryRoute,
+  ApiPublicWebhooksLeadIntakeRoute: ApiPublicWebhooksLeadIntakeRoute,
+  ApiPublicWebhooksMetaRoute: ApiPublicWebhooksMetaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
