@@ -97,7 +97,7 @@ export async function sendInitialWhatsApp(leadId: string) {
     message_id: msg.id,
     event_type: "failed",
     description: `Send failed: ${res.error ?? "unknown"}`,
-    metadata: { status: res.status, response: res.response },
+    metadata: { status: res.status, response: res.response as any } as any,
   });
 
   // Enqueue for retry (next attempt in 1 minute)

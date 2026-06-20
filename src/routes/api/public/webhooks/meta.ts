@@ -57,7 +57,7 @@ export const Route = createFileRoute("/api/public/webhooks/meta")({
                   .maybeSingle();
                 if (!msg) continue;
                 const nowIso = new Date().toISOString();
-                const patch: Record<string, unknown> = { status };
+                const patch: any = { status };
                 if (status === "sent") patch.sent_at = nowIso;
                 if (status === "delivered") patch.delivered_at = nowIso;
                 if (status === "read") patch.read_at = nowIso;
