@@ -14,16 +14,433 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          assigned_to: string | null
+          business_name: string | null
+          city: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          last_activity_at: string
+          lead_code: string
+          mobile: string
+          name: string
+          notes: string | null
+          source: Database["public"]["Enums"]["lead_source"]
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string
+          wa_status: Database["public"]["Enums"]["wa_status"]
+        }
+        Insert: {
+          assigned_to?: string | null
+          business_name?: string | null
+          city?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          last_activity_at?: string
+          lead_code?: string
+          mobile: string
+          name: string
+          notes?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+          wa_status?: Database["public"]["Enums"]["wa_status"]
+        }
+        Update: {
+          assigned_to?: string | null
+          business_name?: string | null
+          city?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          last_activity_at?: string
+          lead_code?: string
+          mobile?: string
+          name?: string
+          notes?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+          wa_status?: Database["public"]["Enums"]["wa_status"]
+        }
+        Relationships: []
+      }
+      message_events: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_type: Database["public"]["Enums"]["message_event_type"]
+          id: string
+          lead_id: string
+          message_id: string | null
+          metadata: Json | null
+          occurred_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_type: Database["public"]["Enums"]["message_event_type"]
+          id?: string
+          lead_id: string
+          message_id?: string | null
+          metadata?: Json | null
+          occurred_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_type?: Database["public"]["Enums"]["message_event_type"]
+          id?: string
+          lead_id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          occurred_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_events_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          api_response: Json | null
+          body: string | null
+          created_at: string
+          delivered_at: string | null
+          direction: Database["public"]["Enums"]["message_direction"]
+          error: string | null
+          failed_at: string | null
+          id: string
+          lead_id: string
+          phone: string
+          read_at: string | null
+          replied_at: string | null
+          retry_count: number
+          sent_at: string | null
+          status: Database["public"]["Enums"]["wa_status"]
+          template_name: string | null
+          updated_at: string
+          wa_message_id: string | null
+        }
+        Insert: {
+          api_response?: Json | null
+          body?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          direction?: Database["public"]["Enums"]["message_direction"]
+          error?: string | null
+          failed_at?: string | null
+          id?: string
+          lead_id: string
+          phone: string
+          read_at?: string | null
+          replied_at?: string | null
+          retry_count?: number
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["wa_status"]
+          template_name?: string | null
+          updated_at?: string
+          wa_message_id?: string | null
+        }
+        Update: {
+          api_response?: Json | null
+          body?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          direction?: Database["public"]["Enums"]["message_direction"]
+          error?: string | null
+          failed_at?: string | null
+          id?: string
+          lead_id?: string
+          phone?: string
+          read_at?: string | null
+          replied_at?: string | null
+          retry_count?: number
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["wa_status"]
+          template_name?: string | null
+          updated_at?: string
+          wa_message_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      templates: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          language: string
+          name: string
+          updated_at: string
+          variables: Json
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          language?: string
+          name: string
+          updated_at?: string
+          variables?: Json
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          language?: string
+          name?: string
+          updated_at?: string
+          variables?: Json
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wa_retry_queue: {
+        Row: {
+          attempts: number
+          created_at: string
+          done: boolean
+          id: string
+          last_error: string | null
+          lead_id: string
+          max_attempts: number
+          message_id: string
+          next_attempt_at: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          done?: boolean
+          id?: string
+          last_error?: string | null
+          lead_id: string
+          max_attempts?: number
+          message_id: string
+          next_attempt_at?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          done?: boolean
+          id?: string
+          last_error?: string | null
+          lead_id?: string
+          max_attempts?: number
+          message_id?: string
+          next_attempt_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wa_retry_queue_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wa_retry_queue_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_logs: {
+        Row: {
+          created_at: string
+          error: string | null
+          headers: Json | null
+          id: string
+          payload: Json
+          processed: boolean
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          headers?: Json | null
+          id?: string
+          payload: Json
+          processed?: boolean
+          source: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          headers?: Json | null
+          id?: string
+          payload?: Json
+          processed?: boolean
+          source?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "manager" | "sales_executive"
+      lead_source:
+        | "justdial"
+        | "website"
+        | "webhook"
+        | "email"
+        | "csv"
+        | "manual"
+        | "other"
+      lead_status:
+        | "new"
+        | "contacted"
+        | "qualified"
+        | "proposal"
+        | "won"
+        | "lost"
+      message_direction: "outbound" | "inbound"
+      message_event_type:
+        | "queued"
+        | "sending"
+        | "sent"
+        | "delivered"
+        | "read"
+        | "failed"
+        | "replied"
+        | "assigned"
+        | "note"
+        | "status_change"
+      wa_status:
+        | "pending"
+        | "sending"
+        | "sent"
+        | "delivered"
+        | "read"
+        | "replied"
+        | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +567,40 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "manager", "sales_executive"],
+      lead_source: [
+        "justdial",
+        "website",
+        "webhook",
+        "email",
+        "csv",
+        "manual",
+        "other",
+      ],
+      lead_status: ["new", "contacted", "qualified", "proposal", "won", "lost"],
+      message_direction: ["outbound", "inbound"],
+      message_event_type: [
+        "queued",
+        "sending",
+        "sent",
+        "delivered",
+        "read",
+        "failed",
+        "replied",
+        "assigned",
+        "note",
+        "status_change",
+      ],
+      wa_status: [
+        "pending",
+        "sending",
+        "sent",
+        "delivered",
+        "read",
+        "replied",
+        "failed",
+      ],
+    },
   },
 } as const
