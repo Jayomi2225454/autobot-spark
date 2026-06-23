@@ -16,7 +16,7 @@ export async function sendInitialWhatsApp(leadId: string) {
   }
 
   // pick default active template
-  let templateName = process.env.META_WHATSAPP_DEFAULT_TEMPLATE || "hello_world";
+  let templateName = TEMPLATE_NAME;
   let language = process.env.META_WHATSAPP_DEFAULT_TEMPLATE_LANG || "en_US";
   const { data: tpl } = await supabaseAdmin
     .from("templates")
