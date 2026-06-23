@@ -137,7 +137,7 @@ export async function retryQueuedMessage(queueId: string) {
     return { ok: false };
   }
 
-  const templateName = msg.template_name || process.env.META_WHATSAPP_DEFAULT_TEMPLATE || "hello_world";
+  const templateName = msg.template_name || TEMPLATE_NAME;
   const language = process.env.META_WHATSAPP_DEFAULT_TEMPLATE_LANG || "en_US";
 
   await supabaseAdmin.from("messages").update({ status: "sending", retry_count: row.attempts }).eq("id", msg.id);
