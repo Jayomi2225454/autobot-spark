@@ -17,7 +17,7 @@ export async function sendInitialWhatsApp(leadId: string) {
 
   // pick default active template
   let templateName = TEMPLATE_NAME;
-  let language = process.env.META_WHATSAPP_DEFAULT_TEMPLATE_LANG || "en_US";
+  let language = process.env.META_WHATSAPP_DEFAULT_TEMPLATE_LANG || "en";
   const { data: tpl } = await supabaseAdmin
     .from("templates")
     .select("name, language")
@@ -59,7 +59,7 @@ export async function sendInitialWhatsApp(leadId: string) {
     to: lead.mobile,
     templateName,
     language,
-    variables: [lead.name],
+    variables: [lead.name || "Customer"],
   });
 
   if (res.ok && res.waMessageId) {
@@ -138,7 +138,7 @@ export async function retryQueuedMessage(queueId: string) {
   }
 
   const templateName = msg.template_name || TEMPLATE_NAME;
-  const language = process.env.META_WHATSAPP_DEFAULT_TEMPLATE_LANG || "en_US";
+  const language = process.env.META_WHATSAPP_DEFAULT_TEMPLATE_LANG || "en";
 
   await supabaseAdmin.from("messages").update({ status: "sending", retry_count: row.attempts }).eq("id", msg.id);
   await supabaseAdmin.from("leads").update({ wa_status: "sending" }).eq("id", lead.id);
@@ -147,7 +147,7 @@ export async function retryQueuedMessage(queueId: string) {
     to: lead.mobile,
     templateName,
     language,
-    variables: [lead.name],
+    variables: [lead.name || "Customer"],
   });
 
   if (res.ok && res.waMessageId) {

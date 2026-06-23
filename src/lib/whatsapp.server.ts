@@ -26,7 +26,7 @@ export function normalizeIndianMobile(raw: string): string {
 
 export async function sendWhatsAppTemplate(input: SendTemplateInput): Promise<SendTemplateResult> {
   const token = process.env.META_WHATSAPP_ACCESS_TOKEN;
-  const phoneNumberId = process.env.META_WHATSAPP_PHONE_NUMBER_ID;
+  const phoneNumberId = process.env.META_WHATSAPP_PHONE_NUMBER_ID || "1154464197756930";
   if (!token || !phoneNumberId) {
     return { ok: false, status: 0, response: null, error: "Meta WhatsApp credentials not configured" };
   }
@@ -50,7 +50,7 @@ export async function sendWhatsAppTemplate(input: SendTemplateInput): Promise<Se
     },
   };
 
-  const url = `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`;
+  const url = `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`;
   try {
     const res = await fetch(url, {
       method: "POST",
