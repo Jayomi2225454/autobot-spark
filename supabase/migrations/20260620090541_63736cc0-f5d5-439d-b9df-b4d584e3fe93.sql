@@ -229,5 +229,5 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.message_events;
 
 -- ============ SEED DEFAULT TEMPLATE ROW (metadata only) ============
 INSERT INTO public.templates (name, language, body, variables, is_default, is_active)
-VALUES ('hello_world', 'en_US', 'Hello {{1}}, thanks for reaching out! Our team will contact you shortly.', '["name"]'::jsonb, true, true)
+VALUES ('justdial_lead_welcome_infobip', 'en', 'Hello {{1}}, thanks for reaching out! Our team will contact you shortly.', '["name"]'::jsonb, true, true)
 ON CONFLICT (name) DO NOTHING;
