@@ -2,6 +2,8 @@
 import { sendWhatsAppTemplate } from "./whatsapp.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+const TEMPLATE_NAME = 'justdial_lead_welcome_infobip';
+
 export async function sendInitialWhatsApp(leadId: string) {
   const { data: lead, error: leadErr } = await supabaseAdmin
     .from("leads")
