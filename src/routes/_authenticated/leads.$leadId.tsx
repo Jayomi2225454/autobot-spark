@@ -69,10 +69,16 @@ function LeadDetail() {
     }
   }
 
-  async function resend() {
+  async function onDelete() {
     try {
-      await resendFn({ data: { lead_id: leadId } });
-      toast.success("WhatsApp re-sent");
+      await deleteFn({ data: { id: leadId } });
+      toast.success("Lead deleted");
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      navigate({ to: "/leads" });
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to delete");
+    }
+  }
       refetch();
     } catch (e: any) {
       toast.error(e?.message ?? "Failed");
