@@ -83,8 +83,9 @@ function LeadDetail() {
     try {
       await deleteFn({ data: { id: leadId } });
       toast.success("Lead deleted");
-      qc.invalidateQueries({ queryKey: ["leads"] });
       navigate({ to: "/leads" });
+      qc.removeQueries({ queryKey: ["lead", leadId] });
+      qc.invalidateQueries({ queryKey: ["leads"] });
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to delete");
     }
