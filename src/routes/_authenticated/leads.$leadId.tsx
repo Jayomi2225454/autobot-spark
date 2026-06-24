@@ -69,6 +69,16 @@ function LeadDetail() {
     }
   }
 
+  async function resend() {
+    try {
+      await resendFn({ data: { lead_id: leadId } });
+      toast.success("WhatsApp re-sent");
+      refetch();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    }
+  }
+
   async function onDelete() {
     try {
       await deleteFn({ data: { id: leadId } });
@@ -77,11 +87,6 @@ function LeadDetail() {
       navigate({ to: "/leads" });
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to delete");
-    }
-  }
-      refetch();
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed");
     }
   }
 
