@@ -37,6 +37,7 @@ function LeadDetail() {
   const getFn = useServerFn(getLead);
   const updateFn = useServerFn(updateLead);
   const resendFn = useServerFn(resendWhatsApp);
+  const deleteFn = useServerFn(deleteLead);
 
   const { data, refetch } = useQuery({
     queryKey: ["lead", leadId],
