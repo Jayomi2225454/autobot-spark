@@ -1,7 +1,12 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getLead, updateLead, resendWhatsApp } from "@/lib/leads.functions";
+import { getLead, updateLead, resendWhatsApp, deleteLead } from "@/lib/leads.functions";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +37,7 @@ function LeadDetail() {
   const getFn = useServerFn(getLead);
   const updateFn = useServerFn(updateLead);
   const resendFn = useServerFn(resendWhatsApp);
+  const deleteFn = useServerFn(deleteLead);
 
   const { data, refetch } = useQuery({
     queryKey: ["lead", leadId],
@@ -73,6 +79,17 @@ function LeadDetail() {
     }
   }
 
+  async function onDelete() {
+    try {
+      await deleteFn({ data: { id: leadId } });
+      toast.success("Lead deleted");
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      navigate({ to: "/leads" });
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to delete");
+    }
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-2">
@@ -98,6 +115,27 @@ function LeadDetail() {
               <Button variant="outline" size="sm" onClick={resend} className="gap-1.5">
                 <RefreshCw className="h-3.5 w-3.5" /> Resend WhatsApp
               </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive">
+                    <Trash2 className="h-3.5 w-3.5" /> Delete
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This permanently removes the lead and all its messages, events, and retry history. This cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Delete lead
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
 
