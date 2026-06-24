@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as DataDeletionRouteImport } from './routes/data-deletion'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,6 +26,16 @@ import { Route as ApiPublicWebhooksMetaRouteImport } from './routes/api/public/w
 import { Route as ApiPublicWebhooksLeadIntakeRouteImport } from './routes/api/public/webhooks/lead-intake'
 import { Route as ApiPublicCronWhatsappRetryRouteImport } from './routes/api/public/cron/whatsapp-retry'
 
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataDeletionRoute = DataDeletionRouteImport.update({
+  id: '/data-deletion',
+  path: '/data-deletion',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -102,6 +114,8 @@ const ApiPublicCronWhatsappRetryRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/data-deletion': typeof DataDeletionRoute
+  '/privacy': typeof PrivacyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -117,6 +131,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/data-deletion': typeof DataDeletionRoute
+  '/privacy': typeof PrivacyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -134,6 +150,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/data-deletion': typeof DataDeletionRoute
+  '/privacy': typeof PrivacyRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/integrations': typeof AuthenticatedIntegrationsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -151,6 +169,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/data-deletion'
+    | '/privacy'
     | '/dashboard'
     | '/integrations'
     | '/settings'
@@ -166,6 +186,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/data-deletion'
+    | '/privacy'
     | '/dashboard'
     | '/integrations'
     | '/settings'
@@ -182,6 +204,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/data-deletion'
+    | '/privacy'
     | '/_authenticated/dashboard'
     | '/_authenticated/integrations'
     | '/_authenticated/settings'
@@ -199,6 +223,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  DataDeletionRoute: typeof DataDeletionRoute
+  PrivacyRoute: typeof PrivacyRoute
   ApiPublicCronWhatsappRetryRoute: typeof ApiPublicCronWhatsappRetryRoute
   ApiPublicWebhooksLeadIntakeRoute: typeof ApiPublicWebhooksLeadIntakeRoute
   ApiPublicWebhooksMetaRoute: typeof ApiPublicWebhooksMetaRoute
@@ -206,6 +232,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data-deletion': {
+      id: '/data-deletion'
+      path: '/data-deletion'
+      fullPath: '/data-deletion'
+      preLoaderRoute: typeof DataDeletionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -336,6 +376,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  DataDeletionRoute: DataDeletionRoute,
+  PrivacyRoute: PrivacyRoute,
   ApiPublicCronWhatsappRetryRoute: ApiPublicCronWhatsappRetryRoute,
   ApiPublicWebhooksLeadIntakeRoute: ApiPublicWebhooksLeadIntakeRoute,
   ApiPublicWebhooksMetaRoute: ApiPublicWebhooksMetaRoute,
