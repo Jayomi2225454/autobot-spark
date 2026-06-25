@@ -171,8 +171,14 @@ export const deleteLead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("leads").delete().eq("id", data.id);
+    const { data: deletedLead, error } = await context.supabase
+      .from("leads")
+      .delete()
+      .eq("id", data.id)
+      .select("id")
+      .maybeSingle();
     if (error) throw new Error(error.message);
+    if (!deletedLead) throw new Error("Lead not found or you do not have permission to delete it");
     return { ok: true };
   });
 

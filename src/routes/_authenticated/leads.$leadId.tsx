@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { WaStatusPill, statusColor } from "@/components/app/StatusPills";
 import {
@@ -38,21 +38,33 @@ function LeadDetail() {
   const updateFn = useServerFn(updateLead);
   const resendFn = useServerFn(resendWhatsApp);
   const deleteFn = useServerFn(deleteLead);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const { data, refetch } = useQuery({
+  const { data, error, isError, refetch } = useQuery({
     queryKey: ["lead", leadId],
     queryFn: () => getFn({ data: { id: leadId } }),
+    retry: false,
   });
 
   useEffect(() => {
     const ch = supabase
       .channel(`lead-${leadId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "leads", filter: `id=eq.${leadId}` }, () => refetch())
-      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `lead_id=eq.${leadId}` }, () => refetch())
-      .on("postgres_changes", { event: "*", schema: "public", table: "message_events", filter: `lead_id=eq.${leadId}` }, () => refetch())
+      .on("postgres_changes", { event: "*", schema: "public", table: "leads", filter: `id=eq.${leadId}` }, () => { if (!isDeleting) refetch(); })
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `lead_id=eq.${leadId}` }, () => { if (!isDeleting) refetch(); })
+      .on("postgres_changes", { event: "*", schema: "public", table: "message_events", filter: `lead_id=eq.${leadId}` }, () => { if (!isDeleting) refetch(); })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [leadId, refetch]);
+  }, [isDeleting, leadId, refetch]);
+
+  if (isError) {
+    return (
+      <Card className="p-6 text-center shadow-card">
+        <h1 className="font-display text-xl font-semibold">Lead unavailable</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{(error as any)?.message ?? "This lead may have been deleted."}</p>
+        <Button className="mt-4" onClick={() => navigate({ to: "/leads" })}>Back to leads</Button>
+      </Card>
+    );
+  }
 
   if (!data) {
     return <div className="text-sm text-muted-foreground">Loading…</div>;
@@ -81,12 +93,15 @@ function LeadDetail() {
 
   async function onDelete() {
     try {
+      setIsDeleting(true);
+      await qc.cancelQueries({ queryKey: ["lead", leadId] });
       await deleteFn({ data: { id: leadId } });
       toast.success("Lead deleted");
-      navigate({ to: "/leads" });
       qc.removeQueries({ queryKey: ["lead", leadId] });
       qc.invalidateQueries({ queryKey: ["leads"] });
+      navigate({ to: "/leads" });
     } catch (e: any) {
+      setIsDeleting(false);
       toast.error(e?.message ?? "Failed to delete");
     }
   }
