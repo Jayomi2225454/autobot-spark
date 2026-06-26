@@ -33,12 +33,21 @@ export async function sendWhatsAppTemplate(input: SendTemplateInput): Promise<Se
   }
 
   const to = normalizeIndianMobile(input.to);
-  const components = input.variables && input.variables.length > 0
-    ? [{
-        type: "body",
-        parameters: input.variables.map((v) => ({ type: "text", text: String(v ?? "") })),
-      }]
-    : undefined;
+  const headerImageUrl = input.headerImageUrl || process.env.META_WHATSAPP_HEADER_IMAGE_URL;
+
+  const components: Array<Record<string, unknown>> = [];
+  if (headerImageUrl) {
+    components.push({
+      type: "header",
+      parameters: [{ type: "image", image: { link: headerImageUrl } }],
+    });
+  }
+  if (input.variables && input.variables.length > 0) {
+    components.push({
+      type: "body",
+      parameters: input.variables.map((v) => ({ type: "text", text: String(v ?? "") })),
+    });
+  }
 
   const body = {
     messaging_product: "whatsapp",
@@ -47,7 +56,7 @@ export async function sendWhatsAppTemplate(input: SendTemplateInput): Promise<Se
     template: {
       name: input.templateName,
       language: { code: input.language },
-      ...(components ? { components } : {}),
+      ...(components.length > 0 ? { components } : {}),
     },
   };
 
