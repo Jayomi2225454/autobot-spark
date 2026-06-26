@@ -6,6 +6,7 @@ export interface SendTemplateInput {
   templateName: string;
   language: string;
   variables?: string[]; // ordered template params, replace {{1}}, {{2}}, ...
+  headerImageUrl?: string; // public URL for image header component
 }
 
 export interface SendTemplateResult {
