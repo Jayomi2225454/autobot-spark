@@ -24,7 +24,6 @@ import { Route as AuthenticatedLeadsImportRouteImport } from './routes/_authenti
 import { Route as AuthenticatedLeadsLeadIdRouteImport } from './routes/_authenticated/leads.$leadId'
 import { Route as ApiPublicWebhooksMetaRouteImport } from './routes/api/public/webhooks/meta'
 import { Route as ApiPublicWebhooksLeadIntakeRouteImport } from './routes/api/public/webhooks/lead-intake'
-import { Route as ApiPublicTestWaSendRouteImport } from './routes/api/public/test/wa-send'
 import { Route as ApiPublicCronWhatsappRetryRouteImport } from './routes/api/public/cron/whatsapp-retry'
 
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -105,11 +104,6 @@ const ApiPublicWebhooksLeadIntakeRoute =
     path: '/api/public/webhooks/lead-intake',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicTestWaSendRoute = ApiPublicTestWaSendRouteImport.update({
-  id: '/api/public/test/wa-send',
-  path: '/api/public/test/wa-send',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicCronWhatsappRetryRoute =
   ApiPublicCronWhatsappRetryRouteImport.update({
     id: '/api/public/cron/whatsapp-retry',
@@ -131,7 +125,6 @@ export interface FileRoutesByFullPath {
   '/leads/new': typeof AuthenticatedLeadsNewRoute
   '/leads/': typeof AuthenticatedLeadsIndexRoute
   '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
-  '/api/public/test/wa-send': typeof ApiPublicTestWaSendRoute
   '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
   '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
@@ -149,7 +142,6 @@ export interface FileRoutesByTo {
   '/leads/new': typeof AuthenticatedLeadsNewRoute
   '/leads': typeof AuthenticatedLeadsIndexRoute
   '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
-  '/api/public/test/wa-send': typeof ApiPublicTestWaSendRoute
   '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
   '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
@@ -169,7 +161,6 @@ export interface FileRoutesById {
   '/_authenticated/leads/new': typeof AuthenticatedLeadsNewRoute
   '/_authenticated/leads/': typeof AuthenticatedLeadsIndexRoute
   '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
-  '/api/public/test/wa-send': typeof ApiPublicTestWaSendRoute
   '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
   '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
@@ -189,7 +180,6 @@ export interface FileRouteTypes {
     | '/leads/new'
     | '/leads/'
     | '/api/public/cron/whatsapp-retry'
-    | '/api/public/test/wa-send'
     | '/api/public/webhooks/lead-intake'
     | '/api/public/webhooks/meta'
   fileRoutesByTo: FileRoutesByTo
@@ -207,7 +197,6 @@ export interface FileRouteTypes {
     | '/leads/new'
     | '/leads'
     | '/api/public/cron/whatsapp-retry'
-    | '/api/public/test/wa-send'
     | '/api/public/webhooks/lead-intake'
     | '/api/public/webhooks/meta'
   id:
@@ -226,7 +215,6 @@ export interface FileRouteTypes {
     | '/_authenticated/leads/new'
     | '/_authenticated/leads/'
     | '/api/public/cron/whatsapp-retry'
-    | '/api/public/test/wa-send'
     | '/api/public/webhooks/lead-intake'
     | '/api/public/webhooks/meta'
   fileRoutesById: FileRoutesById
@@ -238,7 +226,6 @@ export interface RootRouteChildren {
   DataDeletionRoute: typeof DataDeletionRoute
   PrivacyRoute: typeof PrivacyRoute
   ApiPublicCronWhatsappRetryRoute: typeof ApiPublicCronWhatsappRetryRoute
-  ApiPublicTestWaSendRoute: typeof ApiPublicTestWaSendRoute
   ApiPublicWebhooksLeadIntakeRoute: typeof ApiPublicWebhooksLeadIntakeRoute
   ApiPublicWebhooksMetaRoute: typeof ApiPublicWebhooksMetaRoute
 }
@@ -350,13 +337,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksLeadIntakeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/test/wa-send': {
-      id: '/api/public/test/wa-send'
-      path: '/api/public/test/wa-send'
-      fullPath: '/api/public/test/wa-send'
-      preLoaderRoute: typeof ApiPublicTestWaSendRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/cron/whatsapp-retry': {
       id: '/api/public/cron/whatsapp-retry'
       path: '/api/public/cron/whatsapp-retry'
@@ -399,7 +379,6 @@ const rootRouteChildren: RootRouteChildren = {
   DataDeletionRoute: DataDeletionRoute,
   PrivacyRoute: PrivacyRoute,
   ApiPublicCronWhatsappRetryRoute: ApiPublicCronWhatsappRetryRoute,
-  ApiPublicTestWaSendRoute: ApiPublicTestWaSendRoute,
   ApiPublicWebhooksLeadIntakeRoute: ApiPublicWebhooksLeadIntakeRoute,
   ApiPublicWebhooksMetaRoute: ApiPublicWebhooksMetaRoute,
 }
