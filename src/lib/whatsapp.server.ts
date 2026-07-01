@@ -85,3 +85,35 @@ export async function sendWhatsAppTemplate(input: SendTemplateInput): Promise<Se
     return { ok: false, status: 0, response: null, error: err instanceof Error ? err.message : String(err) };
   }
 }
+
+export async function sendWhatsAppText(input: { to: string; body: string }): Promise<SendTemplateResult> {
+  const token = process.env.META_WHATSAPP_ACCESS_TOKEN;
+  const phoneNumberId = process.env.META_WHATSAPP_PHONE_NUMBER_ID || "1154464197756930";
+  if (!token || !phoneNumberId) {
+    return { ok: false, status: 0, response: null, error: "Meta WhatsApp credentials not configured" };
+  }
+  const to = normalizeIndianMobile(input.to);
+  const body = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "text",
+    text: { preview_url: false, body: input.body },
+  };
+  const url = `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return { ok: false, status: res.status, response: json, error: (json as any)?.error?.message || `HTTP ${res.status}` };
+    }
+    const waMessageId = (json as any)?.messages?.[0]?.id as string | undefined;
+    return { ok: true, status: res.status, response: json, waMessageId };
+  } catch (err) {
+    return { ok: false, status: 0, response: null, error: err instanceof Error ? err.message : String(err) };
+  }
+}
