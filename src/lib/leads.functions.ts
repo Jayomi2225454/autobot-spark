@@ -167,6 +167,75 @@ export const resendWhatsApp = createServerFn({ method: "POST" })
     return sendInitialWhatsApp(data.lead_id);
   });
 
+export const sendTextMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ lead_id: z.string().uuid(), body: z.string().trim().min(1).max(4096) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { data: lead, error: leadErr } = await supabase
+      .from("leads")
+      .select("id, mobile")
+      .eq("id", data.lead_id)
+      .maybeSingle();
+    if (leadErr) throw new Error(leadErr.message);
+    if (!lead) throw new Error("Lead not found");
+
+    const { data: msg, error: msgErr } = await supabase
+      .from("messages")
+      .insert({
+        lead_id: lead.id,
+        direction: "outbound",
+        phone: lead.mobile,
+        status: "sending",
+        body: data.body,
+      })
+      .select("id")
+      .single();
+    if (msgErr) throw new Error(msgErr.message);
+
+    const { sendWhatsAppText } = await import("./whatsapp.server");
+    const res = await sendWhatsAppText({ to: lead.mobile, body: data.body });
+
+    if (res.ok && res.waMessageId) {
+      await supabase
+        .from("messages")
+        .update({
+          wa_message_id: res.waMessageId,
+          status: "sent",
+          sent_at: new Date().toISOString(),
+          api_response: res.response as any,
+        })
+        .eq("id", msg.id);
+      await supabase.from("leads").update({ wa_status: "sent", last_activity_at: new Date().toISOString() }).eq("id", lead.id);
+      await supabase.from("message_events").insert({
+        lead_id: lead.id,
+        message_id: msg.id,
+        event_type: "sent",
+        description: "Free-form text sent",
+      });
+      return { ok: true, messageId: msg.id, waMessageId: res.waMessageId };
+    }
+
+    await supabase
+      .from("messages")
+      .update({
+        status: "failed",
+        error: res.error ?? "Unknown error",
+        api_response: res.response as any,
+        failed_at: new Date().toISOString(),
+      })
+      .eq("id", msg.id);
+    await supabase.from("message_events").insert({
+      lead_id: lead.id,
+      message_id: msg.id,
+      event_type: "failed",
+      description: `Text send failed: ${res.error ?? "unknown"}`,
+    });
+    throw new Error(res.error ?? "Failed to send message");
+  });
+
 export const deleteLead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))

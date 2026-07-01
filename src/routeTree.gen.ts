@@ -24,6 +24,7 @@ import { Route as AuthenticatedLeadsImportRouteImport } from './routes/_authenti
 import { Route as AuthenticatedLeadsLeadIdRouteImport } from './routes/_authenticated/leads.$leadId'
 import { Route as ApiPublicWebhooksMetaRouteImport } from './routes/api/public/webhooks/meta'
 import { Route as ApiPublicWebhooksLeadIntakeRouteImport } from './routes/api/public/webhooks/lead-intake'
+import { Route as ApiPublicLeadsJustdialRouteImport } from './routes/api/public/leads/justdial'
 import { Route as ApiPublicCronWhatsappRetryRouteImport } from './routes/api/public/cron/whatsapp-retry'
 
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -104,6 +105,11 @@ const ApiPublicWebhooksLeadIntakeRoute =
     path: '/api/public/webhooks/lead-intake',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicLeadsJustdialRoute = ApiPublicLeadsJustdialRouteImport.update({
+  id: '/api/public/leads/justdial',
+  path: '/api/public/leads/justdial',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCronWhatsappRetryRoute =
   ApiPublicCronWhatsappRetryRouteImport.update({
     id: '/api/public/cron/whatsapp-retry',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/leads/new': typeof AuthenticatedLeadsNewRoute
   '/leads/': typeof AuthenticatedLeadsIndexRoute
   '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
+  '/api/public/leads/justdial': typeof ApiPublicLeadsJustdialRoute
   '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
   '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/leads/new': typeof AuthenticatedLeadsNewRoute
   '/leads': typeof AuthenticatedLeadsIndexRoute
   '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
+  '/api/public/leads/justdial': typeof ApiPublicLeadsJustdialRoute
   '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
   '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/_authenticated/leads/new': typeof AuthenticatedLeadsNewRoute
   '/_authenticated/leads/': typeof AuthenticatedLeadsIndexRoute
   '/api/public/cron/whatsapp-retry': typeof ApiPublicCronWhatsappRetryRoute
+  '/api/public/leads/justdial': typeof ApiPublicLeadsJustdialRoute
   '/api/public/webhooks/lead-intake': typeof ApiPublicWebhooksLeadIntakeRoute
   '/api/public/webhooks/meta': typeof ApiPublicWebhooksMetaRoute
 }
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/leads/new'
     | '/leads/'
     | '/api/public/cron/whatsapp-retry'
+    | '/api/public/leads/justdial'
     | '/api/public/webhooks/lead-intake'
     | '/api/public/webhooks/meta'
   fileRoutesByTo: FileRoutesByTo
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/leads/new'
     | '/leads'
     | '/api/public/cron/whatsapp-retry'
+    | '/api/public/leads/justdial'
     | '/api/public/webhooks/lead-intake'
     | '/api/public/webhooks/meta'
   id:
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/_authenticated/leads/new'
     | '/_authenticated/leads/'
     | '/api/public/cron/whatsapp-retry'
+    | '/api/public/leads/justdial'
     | '/api/public/webhooks/lead-intake'
     | '/api/public/webhooks/meta'
   fileRoutesById: FileRoutesById
@@ -226,6 +238,7 @@ export interface RootRouteChildren {
   DataDeletionRoute: typeof DataDeletionRoute
   PrivacyRoute: typeof PrivacyRoute
   ApiPublicCronWhatsappRetryRoute: typeof ApiPublicCronWhatsappRetryRoute
+  ApiPublicLeadsJustdialRoute: typeof ApiPublicLeadsJustdialRoute
   ApiPublicWebhooksLeadIntakeRoute: typeof ApiPublicWebhooksLeadIntakeRoute
   ApiPublicWebhooksMetaRoute: typeof ApiPublicWebhooksMetaRoute
 }
@@ -337,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksLeadIntakeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/leads/justdial': {
+      id: '/api/public/leads/justdial'
+      path: '/api/public/leads/justdial'
+      fullPath: '/api/public/leads/justdial'
+      preLoaderRoute: typeof ApiPublicLeadsJustdialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/whatsapp-retry': {
       id: '/api/public/cron/whatsapp-retry'
       path: '/api/public/cron/whatsapp-retry'
@@ -379,19 +399,10 @@ const rootRouteChildren: RootRouteChildren = {
   DataDeletionRoute: DataDeletionRoute,
   PrivacyRoute: PrivacyRoute,
   ApiPublicCronWhatsappRetryRoute: ApiPublicCronWhatsappRetryRoute,
+  ApiPublicLeadsJustdialRoute: ApiPublicLeadsJustdialRoute,
   ApiPublicWebhooksLeadIntakeRoute: ApiPublicWebhooksLeadIntakeRoute,
   ApiPublicWebhooksMetaRoute: ApiPublicWebhooksMetaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

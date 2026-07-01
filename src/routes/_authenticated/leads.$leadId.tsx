@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getLead, updateLead, resendWhatsApp, deleteLead } from "@/lib/leads.functions";
+import { getLead, updateLead, resendWhatsApp, deleteLead, sendTextMessage } from "@/lib/leads.functions";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -38,7 +39,11 @@ function LeadDetail() {
   const updateFn = useServerFn(updateLead);
   const resendFn = useServerFn(resendWhatsApp);
   const deleteFn = useServerFn(deleteLead);
+  const sendTextFn = useServerFn(sendTextMessage);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [sending, setSending] = useState(false);
+  const [optimistic, setOptimistic] = useState<any[]>([]);
 
   const { data, error, isError, refetch } = useQuery({
     queryKey: ["lead", leadId],
@@ -187,33 +192,73 @@ function LeadDetail() {
             <h2 className="font-display font-semibold">Conversation</h2>
             <p className="text-xs text-muted-foreground">{messages.length} messages</p>
           </div>
-          <div className="max-h-96 space-y-3 overflow-y-auto p-4">
-            {messages.length === 0 && (
-              <p className="text-center text-xs text-muted-foreground">No messages yet.</p>
-            )}
-            {messages.map((m) => (
-              <div key={m.id} className={"flex " + (m.direction === "outbound" ? "justify-end" : "justify-start")}>
-                <div className={"max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-soft " +
-                  (m.direction === "outbound" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground")
-                }>
-                  <div className="whitespace-pre-wrap break-words">{m.body}</div>
-                  <div className="mt-1 flex items-center gap-1 text-[10px] opacity-75">
-                    {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                    {m.direction === "outbound" && (
-                      <>
-                        {m.status === "sent" && <Check className="h-3 w-3" />}
-                        {m.status === "delivered" && <CheckCheck className="h-3 w-3" />}
-                        {m.status === "read" && <CheckCheck className="h-3 w-3 text-info" />}
-                        {m.status === "failed" && <XCircle className="h-3 w-3 text-destructive" />}
-                      </>
-                    )}
+          <div className="flex max-h-[28rem] flex-col">
+            <div className="flex-1 space-y-3 overflow-y-auto p-4">
+              {messages.length === 0 && optimistic.length === 0 && (
+                <p className="text-center text-xs text-muted-foreground">No messages yet.</p>
+              )}
+              {[...messages, ...optimistic].map((m: any) => (
+                <div key={m.id} className={"flex " + (m.direction === "outbound" ? "justify-end" : "justify-start")}>
+                  <div className={"max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-soft " +
+                    (m.direction === "outbound" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground")
+                  }>
+                    <div className="whitespace-pre-wrap break-words">{m.body}</div>
+                    <div className="mt-1 flex items-center gap-1 text-[10px] opacity-75">
+                      {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      {m.direction === "outbound" && (
+                        <>
+                          {m.status === "sending" && <Clock className="h-3 w-3" />}
+                          {m.status === "sent" && <Check className="h-3 w-3" />}
+                          {m.status === "delivered" && <CheckCheck className="h-3 w-3" />}
+                          {m.status === "read" && <CheckCheck className="h-3 w-3 text-info" />}
+                          {m.status === "failed" && <XCircle className="h-3 w-3 text-destructive" />}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <form
+              className="flex items-center gap-2 border-t border-border p-3"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const text = draft.trim();
+                if (!text || sending) return;
+                const tempId = `tmp-${Date.now()}`;
+                setOptimistic((prev) => [...prev, {
+                  id: tempId, direction: "outbound", body: text, status: "sending",
+                  created_at: new Date().toISOString(),
+                }]);
+                setDraft("");
+                setSending(true);
+                try {
+                  await sendTextFn({ data: { lead_id: leadId, body: text } });
+                  await refetch();
+                  setOptimistic((prev) => prev.filter((m) => m.id !== tempId));
+                } catch (err: any) {
+                  setOptimistic((prev) => prev.map((m) => m.id === tempId ? { ...m, status: "failed" } : m));
+                  toast.error(err?.message ?? "Failed to send");
+                } finally {
+                  setSending(false);
+                }
+              }}
+            >
+              <Input
+                placeholder="Type a message…"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                disabled={sending}
+                className="flex-1"
+              />
+              <Button type="submit" size="sm" disabled={sending || !draft.trim()} className="gap-1.5">
+                <Send className="h-3.5 w-3.5" /> Send
+              </Button>
+            </form>
           </div>
         </Card>
       </div>
+
 
       <Card className="overflow-hidden shadow-card">
         <div className="border-b border-border px-5 py-3">
