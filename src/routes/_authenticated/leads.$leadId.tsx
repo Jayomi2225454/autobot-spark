@@ -39,7 +39,11 @@ function LeadDetail() {
   const updateFn = useServerFn(updateLead);
   const resendFn = useServerFn(resendWhatsApp);
   const deleteFn = useServerFn(deleteLead);
+  const sendTextFn = useServerFn(sendTextMessage);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [sending, setSending] = useState(false);
+  const [optimistic, setOptimistic] = useState<any[]>([]);
 
   const { data, error, isError, refetch } = useQuery({
     queryKey: ["lead", leadId],
